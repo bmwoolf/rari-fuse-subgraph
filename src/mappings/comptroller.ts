@@ -47,9 +47,15 @@ function updateFromComptroller(
   address: Address
 ): void {
   const instance = Comptroller.bind(address);
-  entity.maxAssets = instance.maxAssets();
-  entity.liquidationIncentive = instance.liquidationIncentiveMantissa();
-  entity.closeFactor = instance.closeFactorMantissa();
+
+  let maxAssetsCall = instance.try_maxAssets();
+  let liquidationIncentiveCall = instance.try_liquidationIncentiveMantissa();
+  let closeFactorCall = instance.try_closeFactorMantissa();
+
+  if (!maxAssetsCall) entity.maxAssets = maxAssetsCall.value;
+  if (!liquidationIncentiveCall)
+    entity.liquidationIncentive = liquidationIncentiveCall.value;
+  if (!closeFactorCall) entity.closeFactor = closeFactorCall.value;
 }
 
 function updateFromLens(
@@ -58,6 +64,7 @@ function updateFromLens(
 ): void {}
 
 export function handleNewPriceOracle(event: NewPriceOracle): void {
+  log.warning(`🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 handleNewPriceOracle`, []);
   const comptroll = ComptrollerSchema.load(event.address.toHexString());
   comptroll.priceOracle = event.params.newPriceOracle;
   updateFromComptroller(comptroll, event.address);
