@@ -447,6 +447,9 @@ export function handleMarketListed(event: MarketListed): void {
 
   //push cToken to relevant Pool's array
   comptroll.assets = comptroll.assets.concat([ct.id]);
+  comptroll.underlyingAssets = comptroll.underlyingAssets.concat([
+    underlying.toHexString(),
+  ]);
 
   comptroll.save();
 
