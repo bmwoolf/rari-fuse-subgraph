@@ -255,6 +255,15 @@ export class Ctoken extends Entity {
   set totalSeizedTokens(value: BigInt) {
     this.set("totalSeizedTokens", Value.fromBigInt(value));
   }
+
+  get collateralFactor(): BigInt {
+    let value = this.get("collateralFactor");
+    return value.toBigInt();
+  }
+
+  set collateralFactor(value: BigInt) {
+    this.set("collateralFactor", Value.fromBigInt(value));
+  }
 }
 
 export class Pool extends Entity {
@@ -336,6 +345,26 @@ export class Pool extends Entity {
       this.unset("assets");
     } else {
       this.set("assets", Value.fromStringArray(value as Array<string>));
+    }
+  }
+
+  get underlyingAssets(): Array<string> | null {
+    let value = this.get("underlyingAssets");
+    if (value === null || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set underlyingAssets(value: Array<string> | null) {
+    if (value === null) {
+      this.unset("underlyingAssets");
+    } else {
+      this.set(
+        "underlyingAssets",
+        Value.fromStringArray(value as Array<string>)
+      );
     }
   }
 

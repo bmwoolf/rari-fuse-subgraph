@@ -14,8 +14,8 @@ dataSources:
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-          # - FusePoolDirectory
-          - Pool # Add `FusePool` entity to `./schema.graphql`
+        # - FusePoolDirectory
+        - Pool # Add `FusePool` entity to `./schema.graphql`
       abis:
         - name: FusePoolDirectory
           file: ./abis/Fuse/FusePoolDirectory.json
@@ -94,10 +94,8 @@ templates:
           handler: handleNewAdminFee
         - event: Borrow(address,uint256,uint256,uint256)
           handler: handleBorrow
-        - event: RepayBorrow(address,address,uint256,uint256,uint256)
-          handler: handleBorrow
         - event: NewComptroller(address,address)
-          handler: handleNewComptroller 
+          handler: handleNewComptroller
         - event: Mint(address,uint256,uint256)
           handler: handleMint
         - event: LiquidateBorrow(address,address,uint256,address,uint256)
