@@ -64,12 +64,12 @@ export function handlePoolRegistered(event: PoolRegistered): void {
     log.warning("priceOracleCall Reverted", []);
   }
 
-  let maxAssetsCall = comptroller.try_maxAssets();
-  if (!maxAssetsCall.reverted) {
-    comp.maxAssets = comptroller.maxAssets();
-  } else {
-    log.warning("maxAssetsCall Reverted", []);
-  }
+  // let maxAssetsCall = comptroller.try_maxAssets();
+  // if (!maxAssetsCall.reverted) {
+  //   comp.maxAssets = comptroller.maxAssets();
+  // } else {
+  //   log.warning("maxAssetsCall Reverted", []);
+  // }
 
   let liquidationIncentiveMantissaCall = comptroller.try_liquidationIncentiveMantissa();
   if (!liquidationIncentiveMantissaCall.reverted) {

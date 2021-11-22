@@ -255,6 +255,15 @@ export class Ctoken extends Entity {
   set totalSeizedTokens(value: BigInt) {
     this.set("totalSeizedTokens", Value.fromBigInt(value));
   }
+
+  get collateralFactor(): BigInt {
+    let value = this.get("collateralFactor");
+    return value.toBigInt();
+  }
+
+  set collateralFactor(value: BigInt) {
+    this.set("collateralFactor", Value.fromBigInt(value));
+  }
 }
 
 export class Pool extends Entity {

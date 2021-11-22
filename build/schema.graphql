@@ -66,6 +66,8 @@ type Ctoken @entity {
 
   "total tokens seized in liquidations"
   totalSeizedTokens: BigInt!
+
+  collateralFactor: BigInt!
 }
 
 type Pool @entity {
@@ -90,7 +92,6 @@ type Pool @entity {
   # Fields that match Rari's Fuse pool API
   "Name of the Fuse pool this comptroller admins"
   name: String
-
   "oracle the pool of this comptroller uses"
   priceOracle: Bytes!
   "Factor used to determine repayAmount for liquidating"

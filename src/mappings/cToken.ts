@@ -73,8 +73,11 @@ export function handleNewComptroller(event: NewComptroller): void {
 }
 
 export function handleBorrow(event: Borrow): void {
-  log.warning(`🚨cToken line 45, begin handleBorrow()`, []);
   // create a skeleton for the CToken that someone wants to borrow
+  log.warning(`cToken line 45, begin handleBorrow - tx: {} `, [
+    event.transaction.hash.toHexString(),
+  ]);
+
   const entity = CtokenSchema.load(event.address.toHexString());
   //entity.totalBorrows = event.params.totalBorrows;
 
