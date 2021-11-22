@@ -64,7 +64,7 @@ function updateFromLens(
 ): void {}
 
 export function handleNewPriceOracle(event: NewPriceOracle): void {
-  log.warning(`🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 handleNewPriceOracle`, []);
+  log.warning(`🚨 handleNewPriceOracle`, []);
   const comptroll = ComptrollerSchema.load(event.address.toHexString());
   comptroll.priceOracle = event.params.newPriceOracle;
   updateFromComptroller(comptroll, event.address);
@@ -72,7 +72,7 @@ export function handleNewPriceOracle(event: NewPriceOracle): void {
 }
 
 export function handleMarketListed(event: MarketListed): void {
-  log.warning(`🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 handleMarketListed`, []);
+  log.warning(`🚨 handleMarketListed`, []);
   // log.warning(`🚨🚨creating CToken for {}🚨🚨`, [
   //   event.params.cToken.toHexString(),
   // ]);
@@ -91,10 +91,7 @@ export function handleMarketListed(event: MarketListed): void {
   let ct = new CtokenSchema(event.params.cToken.toHexString());
   ct.pool = event.address.toHexString();
 
-  log.warning(
-    `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 below updateFromComptroller`,
-    []
-  );
+  log.warning(`🚨 below updateFromComptroller`, []);
   //CTokenTemplate.create(event.params.cToken); 4
 
   const instance = CToken.bind(event.params.cToken);
@@ -109,23 +106,17 @@ export function handleMarketListed(event: MarketListed): void {
   const erc20 = ERC20.bind(underlying);
   const _balance = erc20.try_balanceOf(event.params.cToken);
   if (!_balance.reverted) {
-    log.warning(`🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 in _balance.reverted`, []);
+    log.warning(`🚨 in _balance.reverted`, []);
     ct.underlyingBalance = _balance.value;
   } else {
     if (
       underlying.toHexString() == "0x0000000000000000000000000000000000000000"
     ) {
-      log.warning(
-        `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 112, cToken, underlying asset is ETH`,
-        []
-      );
+      log.warning(`🚨 line 112, cToken, underlying asset is ETH`, []);
       //underlying is ETH
       ct.underlyingBalance = getETHBalance(event.params.cToken);
     } else {
-      log.warning(
-        `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 120, erc20 balance call fails`,
-        []
-      );
+      log.warning(`🚨 line 120, erc20 balance call fails`, []);
       //erc20 balance call failed
       ct.underlyingBalance = BigInt.fromString("0");
     }
@@ -198,10 +189,7 @@ export function handleMarketListed(event: MarketListed): void {
   //   ct.supplyRatePerBlock.toString(),
   // ]);
 
-  log.warning(
-    `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 195, after all the variable assignments`,
-    []
-  );
+  log.warning(`🚨 line 195, after all the variable assignments`, []);
 
   ct.supplyAPY = convertMantissaToAPY(
     BigDecimal.fromString(ct.supplyRatePerBlock.toString())
@@ -252,10 +240,7 @@ export function handleMarketListed(event: MarketListed): void {
     }
   }
 
-  log.warning(
-    `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 249, after Underlying Asset schema`,
-    []
-  );
+  log.warning(`🚨 line 249, after Underlying Asset schema`, []);
 
   if (!asset.pools.includes(event.address.toHexString())) {
     // log.warning(`asset {} doesn't yet include {} pool, adding it`, [
@@ -281,18 +266,12 @@ export function handleMarketListed(event: MarketListed): void {
   asset.totalLiquidity = BigInt.fromString("0");
   ct.totalSeizedTokens = BigInt.fromString("0");
 
-  log.warning(
-    `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 278, BigInt logic conversion`,
-    []
-  );
+  log.warning(`🚨 line 278, BigInt logic conversion`, []);
 
   //update price from oracle on pool
   const _price = oracle.try_getUnderlyingPrice(event.params.cToken);
   if (!_price.reverted) {
-    log.warning(
-      `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 287, in if statement from oracle pricing`,
-      []
-    );
+    log.warning(`🚨 line 287, in if statement from oracle pricing`, []);
 
     asset.price = _price.value;
 
@@ -354,10 +333,7 @@ export function handleMarketListed(event: MarketListed): void {
       }
     }
 
-    log.warning(
-      `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 351, after borrow logic`,
-      []
-    );
+    log.warning(`🚨 line 351, after borrow logic`, []);
 
     if (ct.totalBorrowUSD.ge(newBorrowUSD)) {
       //total increased
@@ -468,8 +444,5 @@ export function handleMarketListed(event: MarketListed): void {
     [simpleERC20]
   );
 
-  log.warning(
-    `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 line 462, at the end of comptroller`,
-    []
-  );
+  log.warning(`🚨 line 462, at the end of comptroller`, []);
 }
