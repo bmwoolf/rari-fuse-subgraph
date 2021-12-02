@@ -72,6 +72,9 @@ export function handleNewComptroller(event: NewComptroller): void {
   entity.save();
 }
 
+// are there events that we arent tracking that would have an efffect on total value?
+// so we'd be missing info, rather than fucking it up in here
+// is it the summation of rounding errors in calculating?
 export function handleBorrow(event: Borrow): void {
   // create a skeleton for the CToken that someone wants to borrow
   log.warning(`cToken line 45, begin handleBorrow - tx: {} `, [
@@ -79,7 +82,8 @@ export function handleBorrow(event: Borrow): void {
   ]);
 
   const entity = CtokenSchema.load(event.address.toHexString());
-  //entity.totalBorrows = event.params.totalBorrows;
+  // might error out
+  entity.totalBorrow = event.params.totalBorrows;
 
   const instance = CToken.bind(event.address);
   const cTokenSimpleToken = getOrCreateERC20Token(event, event.address);
@@ -102,10 +106,10 @@ export function handleBorrow(event: Borrow): void {
   );
 
   let balanceCall = erc20.try_balanceOf(event.params.borrower);
-  // log.warning(
-  //   "🚨 handleBorrow: trying erc20Balance: token: {} - borrower: {}",
-  //   [erc20._address.toHexString(), event.params.borrower.toHexString()]
-  // );
+  log.warning(
+    "🚨 handleBorrow: trying erc20Balance: token: {} - borrower: {}",
+    [erc20._address.toHexString(), event.params.borrower.toHexString()]
+  );
 
   // Todo - Fix error on borrow in this codeblock
   if (!balanceCall.reverted) {
@@ -130,10 +134,10 @@ export function handleBorrow(event: Borrow): void {
 
   entity.save();
 
-  // log.warning(
-  //   `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 cToken line 122, end handleBorrow()`,
-  //   []
-  // );
+  log.warning(
+    `🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨🚨 cToken line 122, end handleBorrow()`,
+    []
+  );
 }
 
 export function handleRepayBorrow(event: RepayBorrow): void {
@@ -225,20 +229,20 @@ function updateCtoken(
   let util = Utility.load("0");
   const ethUSD = util.ethPriceInDai;
 
-  // log.debug("🚨🚨🚨 cToken line 240 updateCtoken: ethUSDPrice: {}", [
-  //   ethUSD.toString(),
-  // ]);
+  log.debug("🚨🚨🚨 cToken line 240 updateCtoken: ethUSDPrice: {}", [
+    ethUSD.toString(),
+  ]);
 
   //update price from oracle on pool
   const pool = ComptrollerSchema.load(entity.pool);
   const oracle = PriceOracle.bind(pool.priceOracle as Address);
   const asset = UnderlyingAssetSchema.load(entity.underlying);
 
-  // log.debug("updateCtoken: asset: {}", [
-  //   pool.address.toHexString(),
-  //   oracle._address.toHexString(),
-  //   asset.address.toHexString(),
-  // ]);
+  log.debug("updateCtoken: asset: {}", [
+    pool.address.toHexString(),
+    oracle._address.toHexString(),
+    asset.address.toHexString(),
+  ]);
 
   const _price = oracle.try_getUnderlyingPrice(address);
   if (!_price.reverted) {
@@ -248,10 +252,10 @@ function updateCtoken(
         entity.underlyingToken = asset.address;
         entity.underlyingPrice = asset.price; */
 
-  // log.debug("🚨 updateCtoken line 263: 3 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 263: 3 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   const instance = CToken.bind(address);
   const erc20 = ERC20.bind(Address.fromString(entity.underlying));
@@ -260,10 +264,10 @@ function updateCtoken(
     Address.fromString(entity.underlying)
   );
 
-  // log.debug("🚨🚨🚨 updateCtoken line 275: 4 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨🚨🚨 updateCtoken line 275: 4 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   entity.name = instance.name();
   entity.symbol = instance.symbol();
@@ -273,17 +277,17 @@ function updateCtoken(
     entity.underlyingBalance = _balance.value;
   }
 
-  // log.debug("🚨 updateCtoken line 288: 5 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 288: 5 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   const totalSupply = calculateCTokenTotalSupply(instance);
 
-  // log.debug("🚨 updateCtoken line 292: 6 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 292: 6 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   //this one is seperate from the other if block because usd increase doesn't always mean that real amount increased
   if (entity.totalSupply.ge(_price.value)) {
@@ -299,10 +303,10 @@ function updateCtoken(
     }
   }
 
-  // log.debug("🚨 updateCtoken line 314: 7 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 314: 7 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   entity.totalSupply = totalSupply;
   const newTotalSupplyUSD = getTotalInUSD(totalSupply, ethUSD, asset.price);
@@ -331,10 +335,10 @@ function updateCtoken(
   }
   entity.totalSupplyUSD = newTotalSupplyUSD;
 
-  // log.debug("🚨 updateCtoken line 346: 8 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 346: 8 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   const _cash = instance.try_getCash();
   if (!_cash.reverted) {
@@ -398,10 +402,10 @@ function updateCtoken(
     );
   }
 
-  // log.debug("🚨 updateCtoken line 411: 10 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 411: 10 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   const _totalBorrow = instance.try_totalBorrowsCurrent();
   if (!_totalBorrow.reverted) {
@@ -448,10 +452,10 @@ function updateCtoken(
     entity.totalBorrowUSD = newBorrowUSD;
   }
 
-  // log.debug("🚨 updateCtoken line 461: 11 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 461: 11 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   const _totalReserves = instance.try_totalReserves();
   if (!_totalReserves.reverted) {
@@ -492,10 +496,10 @@ function updateCtoken(
     );
   }
 
-  // log.debug("🚨 updateCtoken line 508: 12 - {} - {}", [
-  //   entity.id,
-  //   entity.underlying,
-  // ]);
+  log.debug("🚨 updateCtoken line 508: 12 - {} - {}", [
+    entity.id,
+    entity.underlying,
+  ]);
 
   entity.save();
   pool.save();
